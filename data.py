@@ -24,21 +24,18 @@ def combine_datetime(row:pd.Series):
     date_time = str(year) + '-' + row['date']
     # print(row['date'])
 
-    date = pd.to_datetime(date_time, format='%Y-%m-%d %H:%M', utc=True)
+    date = pd.to_datetime(date_time, format='%Y-%m-%d %H:%M')
 
     return date
 
 def read_pm2(dir: str, local_name: str):
     df = pd.read_csv(os.path.join(dir, local_name + '.csv'))
+    df.columns = ['year', 'date', 'loc', 'y']
 
-    df.columns = ['year', 'date', 'loc', 'Y']
-
-    print(df.head())
-    df['datetime'] = df.apply(combine_datetime, axis=1)
+    df['ds'] = df.apply(combine_datetime, axis=1)
 
     df.drop(['year', 'loc', 'date'], axis=1, inplace=True)
-
-    df = df.reindex(columns=['datetime', 'Y'])
+    df = df.reindex(columns=['ds', 'y'])
 
     return df
 
