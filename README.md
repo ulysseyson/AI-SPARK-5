@@ -1,17 +1,17 @@
-## python scripts for AIFactory Competetion
+# python scripts for AIFactory Competetion
 ### check below for more details
 <https://aifactory.space/competition/detail/2317>
 
-- data
+- data.py
     - make torch dataset
-- model
+- model.py
     - define model
-- train
+- train.py
     - train model using dataloader in data.py
-- infer
+- infer.py
     inference using trained model
     from test dataset fill submission.csv
-- utils
+- utils.py
     - save locations information
 
 ## Scores
