@@ -14,6 +14,7 @@ torch.manual_seed(42)
 # Instantiate the LSTM model
 batch_size = 32
 # TODO: change as calculated
+# data shape
 feature_dim = 167
 output_feature_dim = 17
 
@@ -24,14 +25,14 @@ output_seq_len = 24*3 # 3 days
 # output_dim = (batch_size, 24*2, output_feature_dim)
 hidden_dim = 128
 
-dataloader = generate_dataloader('dataset/processed/flat_fillna_dataset.pt', batch_size=batch_size, shuffle=True, random_state=seed)
+dataloader = generate_dataloader('dataset/processed/flat_fillna_dataset.pt', batch_size=batch_size, shuffle=True)
 
 model = LSTM(feature_dim, hidden_dim, output_seq_len, output_feature_dim)
 
 # Define the loss function and optimizer
 # use MAE error
 # criterion = F.l1_loss
-optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 
 # Train the model
 num_epochs = 5
