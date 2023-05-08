@@ -7,6 +7,10 @@ from tqdm import tqdm
 from data import generate_dataloader, Seq2SeqDataset
 from model import LSTM
 
+# Set random seed for reproducibility
+seed = 42
+torch.manual_seed(42)
+
 # Instantiate the LSTM model
 batch_size = 32
 # TODO: change as calculated
@@ -19,7 +23,7 @@ output_seq_len = 24*2 # 2 days
 # output_dim = (batch_size, 24*2, output_feature_dim)
 hidden_dim = 128
 
-dataloader = generate_dataloader('dataset/processed/flat_fillna_dataset.pt', batch_size=batch_size, shuffle=True)
+dataloader = generate_dataloader('dataset/processed/flat_fillna_dataset.pt', batch_size=batch_size, shuffle=True, random_state=seed)
 
 model = LSTM(feature_dim, hidden_dim, output_seq_len, output_feature_dim)
 

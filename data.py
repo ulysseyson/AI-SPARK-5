@@ -110,9 +110,9 @@ def generate_save_torch_dataset(dir: str, save: str):
         torch.save(dataset, save)
     else: return dataset
 
-def generate_dataloader(saved:str, batch_size:int=32, shuffle:bool=True):
+def generate_dataloader(saved:str, batch_size:int=32, shuffle:bool=True, random_state:int=42):
     dataset = torch.load(saved)
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, random_state=42)
     return dataloader
 
 
