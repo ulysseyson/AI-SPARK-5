@@ -1,8 +1,5 @@
 # make torch tensor data from dataset.
 
-
-
-
 import os
 
 import numpy as np
@@ -37,7 +34,6 @@ class Seq2SeqDataset(Dataset):
 
         return input_tensor, output_tensor
 
-
 def combine_datetime(row:pd.Series):
     year = int(row['year']) + base_year
     date_time = str(year) + '-' + row['date']
@@ -67,11 +63,6 @@ def read_aws(dir: str, aws_loc: str):
     df.fillna(0, inplace=True)
 
     return df
-# TODO (use aws data)
-# 1. make a list of csv files name (계룡, 공주, 논산, ...)
-# 2. concat all aws data of above list (계룡-기온, 계룡-풍향, 계룡-풍속, 계룡-강수량, 계룡-습도, 공주-기온, 공주-풍향, ...)
-# 3. seperate data as 5 day period (3 days for train, 2 day for test)
-# 4. make torch tensor data from above data
 
 def generate_save_torch_dataset(dir: str, save: str):
     # if don't give save, return torch dataset
@@ -84,8 +75,8 @@ def generate_save_torch_dataset(dir: str, save: str):
         df = df.join(df_tmp.set_index('datetime'), how='outer')
 
     # create input/output sequences
-    input_seq_len = 24*3 # 3 days
-    output_seq_len = 24*2 # 2 days
+    input_seq_len = 24*2 # 2 days
+    output_seq_len = 24*3 # 3 days
     input_seq = []
     output_seq = []
 

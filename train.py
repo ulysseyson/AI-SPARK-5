@@ -16,8 +16,9 @@ batch_size = 32
 # TODO: change as calculated
 feature_dim = 167
 output_feature_dim = 17
-input_seq_len = 24*3 # 3 days
-output_seq_len = 24*2 # 2 days
+
+input_seq_len = 24*2 # 2 days
+output_seq_len = 24*3 # 3 days
 
 # input_dim = (batch_size, 24*3, feature_dim)
 # output_dim = (batch_size, 24*2, output_feature_dim)
