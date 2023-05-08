@@ -34,6 +34,19 @@ class Seq2SeqDataset(Dataset):
 
         return input_tensor, output_tensor
 
+class Seq2SeqInferDataset(Dataset):
+    def __init__(self, input_seq):
+        self.input_seq = input_seq
+
+    def __len__(self):
+        return len(self.input_seq)
+
+    def __getitem__(self, idx):
+        input_tensor = self.input_seq[idx]
+
+        return input_tensor
+
+
 def combine_datetime(row:pd.Series):
     year = int(row['year']) + base_year
     date_time = str(year) + '-' + row['date']
@@ -49,6 +62,7 @@ def read_pm2(dir: str, pm2_loc: str):
     df['datetime'] = df.apply(combine_datetime, axis=1)
     # drop columns
     df.drop(['year', 'loc', 'date'], axis=1, inplace=True)
+    # TODO: fillna
     df.fillna(0, inplace=True)
 
     return df
@@ -60,6 +74,7 @@ def read_aws(dir: str, aws_loc: str):
     df['datetime'] = df.apply(combine_datetime, axis=1)
     # can select drop columns
     df.drop([x for x in df.columns if x in aws_drop_columns], axis=1, inplace=True)
+    # TODO: fillna
     df.fillna(0, inplace=True)
 
     return df
@@ -101,18 +116,57 @@ def generate_save_torch_dataset(dir: str, save: str):
         torch.save(dataset, save)
     else: return dataset
 
-def generate_dataloader(saved:str, batch_size:int=32, shuffle:bool=True, random_state:int=42):
+def generate_dataloader(saved:str, batch_size:int=32, shuffle:bool=True):
     dataset = torch.load(saved)
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, random_state=42)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
     return dataloader
+
+def generate_save_torch_dataset_test(dir: str, save: str):
+    # if don't give save, return torch dataset
+    df = pd.DataFrame()
+    for aws_loc in tqdm(aws_locs, desc='load & mere aws data'):
+        df_tmp = read_aws(f'{dir}/TEST_AWS', aws_loc)
+        df = df.join(df_tmp.set_index('datetime'), how='outer')
+    for pm2_loc in tqdm(pm2_locs, desc='load & mere pm2 data'):
+        df_tmp = read_pm2(f'{dir}/TEST_INPUT', pm2_loc)
+        df = df.join(df_tmp.set_index('datetime'), how='outer')
+
+    # create input/output sequences
+    input_seq_len = 24*2 # 2 days
+    output_seq_len = 24*3 # 3 days
+    input_seq = []
+
+    for i in range(0, len(df) - input_seq_len - output_seq_len + 1,input_seq_len + output_seq_len):
+        input_seq.append(df.iloc[i:i+input_seq_len, :].values)
+
+    input_seq = np.array(input_seq)
+    input_seq_tensor = torch.from_numpy(input_seq).float()
+
+    # save torch dataset
+    dataset = Seq2SeqInferDataset(input_seq_tensor)
+    if save is not None:
+        torch.save(dataset, save)
+    else: return dataset
 
 
 if __name__ == "__main__":
-    # generate_save_torch_dataset('dataset', save='dataset/processed/flat_fillna_dataset.pt')
+    # test code for generate_save_torch_dataset
+    """ # generate_save_torch_dataset('dataset', save='dataset/processed/flat_fillna_dataset.pt')
     # check dataset
     dataset = torch.load('dataset/processed/flat_fillna_dataset.pt')
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
     for input, output in dataloader:
         print(input.shape)
         print(output.shape)
+        break """
+
+    # test code for generate_save_torch_dataset_test
+    generate_save_torch_dataset_test('dataset', save='dataset/processed/flat_fillna_dataset_test.pt')
+    # check dataset
+    dataset = torch.load('dataset/processed/flat_fillna_dataset_test.pt')
+    dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+    for input in dataloader:
+        print(input.shape)
+        # print(input)
         break
+
