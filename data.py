@@ -100,21 +100,24 @@ def generate_save_torch_dataset(dir: str, save: str):
     input_seq_tensor = torch.from_numpy(input_seq).float()
     output_seq_tensor = torch.from_numpy(output_seq).float()
 
+    output_seq_tensor = output_seq_tensor.reshape(output_seq_tensor.shape[0], -1)
+
     # save torch dataset
     dataset = Seq2SeqDataset(input_seq_tensor, output_seq_tensor)
     if save is not None:
-        torch.save(dataset, 'dataset.pt')
+        torch.save(dataset, save)
     else: return dataset
 
-def generate_dataloader(saved:str):
+def generate_dataloader(saved:str, batch_size:int=32, shuffle:bool=True):
     dataset = torch.load(saved)
-    dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
     return dataloader
 
 
 if __name__ == "__main__":
-    # generate_save_torch_dataset('dataset', save='dataset.pt')
-    dataset = torch.load('dataset.pt')
+    # generate_save_torch_dataset('dataset', save='dataset/processed/flat_dataset.pt')
+    # check dataset
+    dataset = torch.load('dataset/processed/flat_dataset.pt')
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
     for input, output in dataloader:
         print(input.shape)
