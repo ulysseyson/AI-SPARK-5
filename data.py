@@ -53,6 +53,7 @@ def read_pm2(dir: str, pm2_loc: str):
     df['datetime'] = df.apply(combine_datetime, axis=1)
     # drop columns
     df.drop(['year', 'loc', 'date'], axis=1, inplace=True)
+    df.fillna(0, inplace=True)
 
     return df
 
@@ -63,6 +64,7 @@ def read_aws(dir: str, aws_loc: str):
     df['datetime'] = df.apply(combine_datetime, axis=1)
     # can select drop columns
     df.drop([x for x in df.columns if x in aws_drop_columns], axis=1, inplace=True)
+    df.fillna(0, inplace=True)
 
     return df
 # TODO (use aws data)
@@ -115,9 +117,9 @@ def generate_dataloader(saved:str, batch_size:int=32, shuffle:bool=True):
 
 
 if __name__ == "__main__":
-    # generate_save_torch_dataset('dataset', save='dataset/processed/flat_dataset.pt')
+    # generate_save_torch_dataset('dataset', save='dataset/processed/flat_fillna_dataset.pt')
     # check dataset
-    dataset = torch.load('dataset/processed/flat_dataset.pt')
+    dataset = torch.load('dataset/processed/flat_fillna_dataset.pt')
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
     for input, output in dataloader:
         print(input.shape)

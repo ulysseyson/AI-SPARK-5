@@ -19,7 +19,7 @@ output_seq_len = 24*2 # 2 days
 # output_dim = (batch_size, 24*2, output_feature_dim)
 hidden_dim = 128
 
-dataloader = generate_dataloader('dataset/processed/flat_dataset.pt', batch_size=batch_size, shuffle=True)
+dataloader = generate_dataloader('dataset/processed/flat_fillna_dataset.pt', batch_size=batch_size, shuffle=True)
 
 model = LSTM(feature_dim, hidden_dim, output_seq_len, output_feature_dim)
 
@@ -34,17 +34,17 @@ for epoch in range(num_epochs):
     for input_seq, output_seq in dataloader:
         # Forward pass
         y_pred = model(input_seq)
-        print(y_pred[0])
-        print(output_seq[0])
+        # print(y_pred[0])
+        # print(output_seq[0])
         loss = F.l1_loss(y_pred, output_seq)
-        print(loss)
-        break
+        # print(loss)
+        # break
 
         # Backward pass
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-    break
+    # break
     # Print loss
     print('Epoch [{}/{}], Loss: {:.4f}'.format(epoch+1, num_epochs, loss.item()))
 
