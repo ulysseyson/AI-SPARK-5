@@ -10,7 +10,7 @@ from tqdm import tqdm
 from datetime import datetime, timedelta
 from utils import aws_locs, pm2_locs
 
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, random_split
 
 
 use_columns = ['temp', 'wind_dir', 'wind_speed', 'rain', 'humid']
@@ -116,9 +116,19 @@ def generate_save_torch_dataset(dir: str, save: str):
         torch.save(dataset, save)
     else: return dataset
 
-def generate_dataloader(saved:str, batch_size:int=32, shuffle:bool=True):
+def generate_dataloader(saved:str, batch_size:int=32, shuffle:bool=True, val_split:float=None):
     dataset = torch.load(saved)
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
+    # split train/val
+    if val_split is not None:
+        val_size = int(val_split * len(dataset))
+        train_size = len(dataset) - val_size
+        
+        train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+        return (DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle),
+                DataLoader(val_dataset, batch_size=batch_size, shuffle=shuffle), train_size, val_size)
+
+    else:
+        return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
     return dataloader
 
 def generate_save_torch_dataset_test(dir: str, save: str):
