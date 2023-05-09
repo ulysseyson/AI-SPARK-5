@@ -30,7 +30,7 @@ output_seq_len = 24*3 # 3 days
 
 dataloader = generate_dataloader('dataset/processed/flat_fillna_dataset_test.pt', batch_size=batch_size, shuffle=False)
 
-state_dict = torch.load('model.ckpt')
+state_dict = torch.load('model2.ckpt')
 model = LSTM(feature_dim, hidden_dim, output_seq_len, output_feature_dim)
 model.load_state_dict(state_dict)
 
@@ -57,4 +57,4 @@ for batch_input in dataloader:
 
 submission.columns = ['연도','일시','측정소','PM2.5']
 
-submission.to_csv('submission_1.csv', encoding='utf-8')
+submission.to_csv('submission_3.csv', encoding='utf-8')

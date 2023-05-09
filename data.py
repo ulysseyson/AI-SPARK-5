@@ -151,14 +151,14 @@ def generate_save_torch_dataset_test(dir: str, save: str):
 
 if __name__ == "__main__":
     # test code for generate_save_torch_dataset
-    """ # generate_save_torch_dataset('dataset', save='dataset/processed/flat_fillna_dataset.pt')
+    generate_save_torch_dataset('dataset', save='dataset/processed/flat_fillna_dataset.pt')
     # check dataset
     dataset = torch.load('dataset/processed/flat_fillna_dataset.pt')
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
     for input, output in dataloader:
         print(input.shape)
         print(output.shape)
-        break """
+        break
 
     # test code for generate_save_torch_dataset_test
     generate_save_torch_dataset_test('dataset', save='dataset/processed/flat_fillna_dataset_test.pt')

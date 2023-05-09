@@ -7,6 +7,10 @@ from tqdm import tqdm
 from data import generate_dataloader, Seq2SeqDataset
 from model import LSTM
 
+if torch.cuda.is_available():
+    device = torch.device('cuda')
+else: device = torch.device('cpu')
+
 # Set random seed for reproducibility
 seed = 42
 torch.manual_seed(42)
@@ -27,7 +31,10 @@ hidden_dim = 128
 
 dataloader = generate_dataloader('dataset/processed/flat_fillna_dataset.pt', batch_size=batch_size, shuffle=True)
 
+# print(dataloader.dataset[0][0].device)
+# exit()
 model = LSTM(feature_dim, hidden_dim, output_seq_len, output_feature_dim)
+model.to(device)
 
 # Define the loss function and optimizer
 # use MAE error
@@ -35,9 +42,11 @@ model = LSTM(feature_dim, hidden_dim, output_seq_len, output_feature_dim)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 
 # Train the model
-num_epochs = 5
+num_epochs = 200
 for epoch in range(num_epochs):
     for input_seq, output_seq in dataloader:
+        input_seq = input_seq.to(device)
+        output_seq = output_seq.to(device)
         # Forward pass
         y_pred = model(input_seq)
         # print(y_pred[0])
@@ -55,4 +64,4 @@ for epoch in range(num_epochs):
     print('Epoch [{}/{}], Loss: {:.4f}'.format(epoch+1, num_epochs, loss.item()))
 
 # Save the model checkpoint
-torch.save(model.state_dict(), 'model.ckpt')
+torch.save(model.state_dict(), 'model2.ckpt')
