@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import numpy as np
 
 from tqdm import tqdm
 
@@ -38,52 +39,65 @@ model.to(device)
 
 # Define the loss function and optimizer
 # use MAE error
-# criterion = F.l1_loss
+criterion = F.l1_loss
 optimizer = torch.optim.Adam(model.parameters(), lr=0.00001)
 
-# Train the model
-num_epochs = 200
-for epoch in range(num_epochs):
-    # Train
-    model.train()
-    train_loss = 0.0
-    for input_seq, output_seq in train_dataloader:
-        input_seq = input_seq.to(device)
-        output_seq = output_seq.to(device)
-        # Forward pass
-        y_pred = model(input_seq)
-        # print(y_pred[0])
-        # print(output_seq[0])
-        loss = F.l1_loss(y_pred, output_seq)
-        # print(loss)
-        # break
-
-        # Backward pass
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        
-        train_loss += loss.item() * input_seq.size(0)
-    
-    # average
-    train_loss /= train_size
-    model.eval()
-    val_loss = 0.0
-    with torch.no_grad():
-        for input_seq, output_seq in val_dataloader:
+def train(model, optimizer, criterion, train_dataloader, val_dataloader, early_stopping_patience=10):
+    best_val_loss = np.Inf
+    early_stopping_counter = 0
+    # Train the model
+    num_epochs = 200
+    for epoch in range(num_epochs):
+        # Train
+        model.train()
+        train_loss = 0.0
+        for input_seq, output_seq in train_dataloader:
             input_seq = input_seq.to(device)
             output_seq = output_seq.to(device)
             # Forward pass
             y_pred = model(input_seq)
             # print(y_pred[0])
             # print(output_seq[0])
-            loss = F.l1_loss(y_pred, output_seq)
-            val_loss += loss.item() * input_seq.size(0)
-    # average
-    val_loss /= val_size
-            
-    if epoch % 10 == 0:
-        print(f"Epoch {epoch+1}/{num_epochs}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
+            loss = criterion(y_pred, output_seq)
+            # print(loss)
+            # break
 
-# Save the model checkpoint
-torch.save(model.state_dict(), 'model2.ckpt')
+            # Backward pass
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            train_loss += loss.item() * input_seq.size(0)
+
+        # average
+        train_loss /= train_size
+        model.eval()
+        val_loss = 0.0
+        with torch.no_grad():
+            for input_seq, output_seq in val_dataloader:
+                input_seq = input_seq.to(device)
+                output_seq = output_seq.to(device)
+                # Forward pass
+                y_pred = model(input_seq)
+                # print(y_pred[0])
+                # print(output_seq[0])
+                loss = F.l1_loss(y_pred, output_seq)
+                val_loss += loss.item() * input_seq.size(0)
+        # average
+        val_loss /= val_size
+
+        if epoch % 10 == 0:
+            print(f"Epoch {epoch+1}/{num_epochs}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            torch.save(model.state_dict(), 'result/model/best_model.ckpt')
+        else:
+            early_stopping_counter += 1
+            if early_stopping_counter > early_stopping_patience:
+                print(f"Early stopping at epoch {epoch+1}")
+                break
+
+if __name__ == "__main__":
+    # model = LSTM(feature_dim, hidden_dim, output_seq_len, output_feature_dim)
+    # model.to(device)
+    train(model, optimizer, criterion, train_dataloader, val_dataloader)
