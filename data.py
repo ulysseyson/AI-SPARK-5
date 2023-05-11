@@ -108,7 +108,7 @@ def generate_save_torch_dataset(dir: str, save: str):
     input_seq_tensor = torch.from_numpy(input_seq).float()
     output_seq_tensor = torch.from_numpy(output_seq).float()
 
-    output_seq_tensor = output_seq_tensor.reshape(output_seq_tensor.shape[0], -1)
+    # output_seq_tensor = output_seq_tensor.reshape(output_seq_tensor.shape[0], -1)
 
     # save torch dataset
     dataset = Seq2SeqDataset(input_seq_tensor, output_seq_tensor)
@@ -160,10 +160,10 @@ def generate_save_torch_dataset_test(dir: str, save: str):
 
 
 if __name__ == "__main__":
-    # # test code for generate_save_torch_dataset
-    # generate_save_torch_dataset('dataset', save='dataset/processed/flat_fillna_dataset.pt')
+    # test code for generate_save_torch_dataset
+    # generate_save_torch_dataset('dataset', save='dataset/processed/flat_fillna_reshape_dataset.pt')
     # check dataset
-    dataset = torch.load('dataset/processed/flat_fillna_dataset.pt')
+    dataset = torch.load('dataset/processed/flat_fillna_reshape_dataset.pt')
     dataloader = DataLoader(dataset, batch_size=32, shuffle=False)
     for input, output in dataloader:
         print(input.shape)
@@ -171,10 +171,10 @@ if __name__ == "__main__":
         print(output[0])
         break
 
-    # # test code for generate_save_torch_dataset_test
-    # generate_save_torch_dataset_test('dataset', save='dataset/processed/flat_fillna_dataset_test.pt')
+    # test code for generate_save_torch_dataset_test
+    generate_save_torch_dataset_test('dataset', save='dataset/processed/flat_fillna_reshape_dataset_test.pt')
     # check dataset
-    dataset = torch.load('dataset/processed/flat_fillna_dataset_test.pt')
+    dataset = torch.load('dataset/processed/flat_fillna_reshape_dataset_test.pt')
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
     for input in dataloader:
         print(input.shape)
