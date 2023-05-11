@@ -23,7 +23,7 @@ seed = 42
 torch.manual_seed(seed)
 
 # Instantiate the LSTM model
-batch_size = 32
+batch_size = 16
 # TODO: change as calculated
 # data shape
 feature_dim = 167
@@ -51,34 +51,34 @@ criterion = F.l1_loss
 
 # def train(model, optimizer, criterion, dataset_path, num_epochs, model_save_path):
 
-dataloader = generate_dataloader('dataset/processed/flat_fillna_dataset.pt', batch_size=batch_size, shuffle=False)
+dataloader = generate_dataloader('dataset/processed/flat_fillna_reshape_dataset.pt', batch_size=batch_size, shuffle=False)
 
-# num_epochs = 10
-# for epoch in range(num_epochs):
-#     for input_seq, output_seq in dataloader:
-#         input_seq = input_seq.to(device)
-#         output_seq = output_seq.to(device)
+num_epochs = 10
+for epoch in range(num_epochs):
+    for input_seq, output_seq in dataloader:
+            input_seq = input_seq.to(device)
+            output_seq = output_seq.to(device)
 
-#         y_pred = model(input_seq)
-#         loss = F.l1_loss(y_pred, output_seq)
-#         optimizer.zero_grad()
+            y_pred = model(input_seq)
+            loss = F.l1_loss(y_pred, output_seq)
+            optimizer.zero_grad()
 
 
-#         loss.backward()
-#         torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)
-#         optimizer.step()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)
+            optimizer.step()
 
-#         # train_loss += loss.item() * input_seq.size(0)
-#     print('Epoch [{}/{}], Loss: {:.4f}'.format(epoch+1, num_epochs, loss.item()))
+            # train_loss += loss.item() * input_seq.size(0)
+    print('Epoch [{}/{}], Loss: {:.4f}'.format(epoch+1, num_epochs, loss.item()))
 
-for input_seq, output_seq in dataloader:
-    input_seq = input_seq.to(device)
-    output = model(input_seq)
-    print(output_seq.shape)
-    print(output_seq)
-    print(output.shape)
-    print(output)
-    break
+# for input_seq, output_seq in dataloader:
+#     input_seq = input_seq.to(device)
+#     output = model(input_seq)
+#     print(output_seq.shape) 
+#     # print(output_seq)
+#     print(output.shape)
+#     # print(output)
+#     break
 exit()
 
 # Save the model checkpoint
