@@ -9,7 +9,7 @@ from tqdm import tqdm
 from data import generate_dataloader, Seq2SeqDataset
 from torch.utils.data import Dataset, DataLoader, Subset
 
-from sklearn.model_selection import KFold
+# from sklearn.model_selection import KFold
 
 from model import LSTM
 
@@ -74,15 +74,15 @@ for epoch in range(num_epochs):
 # for input_seq, output_seq in dataloader:
 #     input_seq = input_seq.to(device)
 #     output = model(input_seq)
-#     print(output_seq.shape) 
+#     print(output_seq.shape)
 #     # print(output_seq)
 #     print(output.shape)
 #     # print(output)
 #     break
+torch.save(model.state_dict(), 'result/model/base_model_3.ckpt')
 exit()
 
 # Save the model checkpoint
-torch.save(model.state_dict(), 'result/model/base_model_2e.ckpt')
 exit()
 
 # Train the model
