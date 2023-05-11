@@ -50,7 +50,7 @@ index_base = 0
 for batch_input in dataloader:
     batch_input = batch_input.to(device)
     batch_output = model(batch_input)
-    batch_output = batch_output.reshape(batch_output.shape[0], output_seq_len, output_feature_dim)
+    # batch_output = batch_output.reshape(batch_output.shape[0], output_seq_len, output_feature_dim)
     for output in  batch_output:
         output_t = output.transpose(0,1)
         output_t = output_t.cpu()
