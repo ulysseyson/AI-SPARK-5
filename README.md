@@ -16,8 +16,8 @@
 
 ## Scores
 1st try is 13th place, 8.15148398 score.
+2nd try with more epoch, 7.93673927 score.
 
-TODO:
-- more complex model
-- add validation process while training
-- process aws data (now uses for input_feature vector)
+TODO for next competition:
+- outlier data remove
+- model validaition truth? (had not matched val score improved and leaderboard score.
